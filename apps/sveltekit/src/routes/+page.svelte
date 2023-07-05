@@ -13,7 +13,7 @@
 
   let form: HTMLFormElement;
   const connection = {
-    endpoint: 'home.jet-black.xyz:32199',
+    endpoint: 'https://assist-button-proxy.app.jet-black.xyz',
     label: 'Device1',
     active: false,
     timeout: 0
@@ -39,7 +39,7 @@
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 500);
-      const res = await fetch(`http://${connection.endpoint}/status`, {
+      const res = await fetch(connection.endpoint, {
         signal: controller.signal
       });
       clearTimeout(timeout);
