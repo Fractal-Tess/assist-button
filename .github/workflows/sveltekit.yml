@@ -54,7 +54,7 @@ jobs:
       - uses: a7ul/tar-action@v1.1.0
         with:
           command: c
-          cwd: './apps/web'
+          cwd: './apps/sveltekit'
           files: |
             build/
             captain-definition
