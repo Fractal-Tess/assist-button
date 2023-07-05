@@ -13,7 +13,7 @@
 
   let form: HTMLFormElement;
   const connection = {
-    endpoint: 'https://assist-button-proxy.app.jet-black.xyz',
+    endpoint: 'https://assist-button-proxy.app.jet-black.xyz/status',
     label: 'Device1',
     active: false,
     timeout: 0
