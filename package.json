@@ -1,15 +1,37 @@
 {
   "name": "assist-button",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.1",
+  "author": "Fractal-Tess",
+  "license": "MIT",
   "scripts": {
-    "build":"turbo run build"
+    "build": "turbo run build",
+    "dev": "turbo run dev"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "turbo": "^1.10.7"
+    "@changesets/cli": "^2.26.2",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "caprover": "^2.2.3",
+    "eslint": "^8.44.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-svelte3": "^4.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
+    "prettier": "^2.0.0",
+    "prettier-plugin-svelte": "^2.10.1",
+    "prettier-plugin-tailwindcss": "^0.3.0",
+    "turbo": "1.10.7",
+    "typescript": "^5.1.6"
+  },
+  "lint-staged": {
+    "*.{svelte,ts}": [
+      "eslint --ignore-path=./.eslintignore",
+      "prettier --write --plugin-search-dir=. --ignore-path=./.prettierignore"
+    ]
+  },
+  "engineStrict": true,
+  "engines": {
+    "pnpm": ">=8.5.0",
+    "node": ">18.0.0 <19.0.0"
   }
 }
