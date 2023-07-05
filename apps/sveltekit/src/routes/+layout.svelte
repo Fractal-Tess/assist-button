@@ -38,7 +38,7 @@
 </svelte:head>
 
 <div
-  class="form-control min-h-screen bg-fixed heropattern-topography-black/10 dark:heropattern-topography-white/10">
+  class="form-control heropattern-topography-black/10 dark:heropattern-topography-white/10 min-h-screen bg-fixed">
   <BaseHeader />
   <main class="form-control flex-1">
     <slot />
