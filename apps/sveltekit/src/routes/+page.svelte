@@ -27,7 +27,7 @@
   const sendNotification = (msg: string) => {
     if (Notification.permission !== 'granted')
       throw new Error('Notification permission not granted');
-    new Notification(msg);
+    new Notification(msg, { icon: 'logo.png', vibrate: [100, 50, 100] });
   };
 
   // Watch for events
