@@ -1,9 +1,6 @@
 /// <reference types="@sveltejs/kit" />
 import { build, files, version } from '$service-worker';
 
-console.log(build);
-console.log(files);
-console.log(version);
 // Create a unique cache name for this deployment
 const CACHE = `cache-${version}`;
 
@@ -62,4 +59,14 @@ self.addEventListener('fetch', event => {
   }
 
   event.respondWith(respond());
+});
+
+self.addEventListener('push', event => {
+  const title = 'Button pressed';
+  const options = {
+    icon: 'logo.png',
+    badge: 'logo.png'
+  };
+  console.log('here');
+  event.waitUntil(self.registration.showNotification(title, options));
 });
