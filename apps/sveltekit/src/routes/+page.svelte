@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
-
   if (Notification.permission === 'default') {
     Notification.requestPermission().then(result => {
       if (result === 'granted') {
@@ -34,6 +32,7 @@
   // Watch for events
 
   (async () => {
+    let disconnectedCount = 0;
     for (;;) {
       // Throttle
       await sleep(1000);
@@ -41,6 +40,7 @@
       // Check if the `active` status
       if (!connection.active) {
         connection.connected = false;
+        disconnectedCount = 0;
         continue;
       }
 
@@ -53,6 +53,7 @@
         });
         clearTimeout(timeout);
         connection.connected = true;
+        disconnectedCount = 0;
 
         // Throw on non-200
         if (!res.ok) throw new Error("Response didn't have ok status");
@@ -70,8 +71,7 @@
             break;
         }
       } catch (error) {
-        // If previously was connected
-        if (connection.connected) sendNotification('Cannot connected');
+        if (disconnectedCount++ > 5) sendNotification('Cannot connected');
         // Signal disconnection
         connection.connected = false;
         console.error(error);
