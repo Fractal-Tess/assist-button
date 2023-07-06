@@ -1,10 +1,8 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
-  let status = '';
   if (Notification.permission === 'default') {
     Notification.requestPermission().then(result => {
-      status = result;
       if (result === 'granted') {
         new Notification('Test');
       }
@@ -16,11 +14,12 @@
     endpoint: 'https://assist-button-proxy.app.jet-black.xyz/status',
     label: 'Device1',
     active: false,
-    timeout: 0
+    timeout: 0,
+    connected: false
   };
 
   // Handle adding more endpoints
-  const handleSubbmit = () => {
+  const handleSubmit = () => {
     connection.active = true;
   };
 
@@ -30,56 +29,70 @@
     new Notification(msg, { icon: 'logo.png', vibrate: [100, 50, 100] });
   };
 
+  const sleep = (time: number) =>
+    new Promise(resolve => setTimeout(resolve, time));
   // Watch for events
-  const interval = setInterval(async () => {
-    const now = new Date().getTime();
-    if (connection.timeout > now) return;
-    if (!connection.active) return;
 
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 500);
-      const res = await fetch(connection.endpoint, {
-        signal: controller.signal
-      });
-      clearTimeout(timeout);
+  (async () => {
+    for (;;) {
+      // Throttle
+      await sleep(1000);
 
-      if (!res.ok) throw new Error("Response didn't have ok status");
-      const data = await res.json();
-      switch (data.requiresAssistance) {
-        case 'YES':
-          connection.timeout = new Date().getTime() + 10000;
-          sendNotification('Asssistance button pressed');
-          break;
-        case 'NO':
-          // todo...
-          break;
+      // Check if the `active` status
+      if (!connection.active) {
+        connection.connected = false;
+        continue;
       }
-    } catch (error) {
-      sendNotification('Cannot connected');
-      connection.active = false;
-      console.error(error);
-    }
-  }, 1000);
 
-  onDestroy(() => {
-    clearInterval(interval);
-  });
+      try {
+        // Give 500 ms for fetching
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 500);
+        const res = await fetch(connection.endpoint, {
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+        connection.connected = true;
+
+        // Throw on non-200
+        if (!res.ok) throw new Error("Response didn't have ok status");
+
+        // Parse
+        const data = await res.json();
+        switch (data.requiresAssistance) {
+          case 'YES':
+            // Send notification and wait 10 s
+            sendNotification('Assistance button pressed');
+            await sleep(10_000);
+            break;
+          case 'NO':
+            // NOOP
+            break;
+        }
+      } catch (error) {
+        // If previously was connected
+        if (connection.connected) sendNotification('Cannot connected');
+        // Signal disconnection
+        connection.connected = false;
+        console.error(error);
+      }
+    }
+  })();
 </script>
 
 <div class="form-control flex-1 items-center justify-center gap-y-20">
   <span
     class="bg-base-100 rounded-md border-2 px-4 py-2 text-2xl font-extralight md:text-3xl"
-    class:text-primary={connection.active}
-    class:border-primary={connection.active}
-    class:text-error={!connection.active}
-    class:border-error={!connection.active}>
-    {connection.active ? 'Connected' : 'Disconnected'}</span>
+    class:text-primary={connection.connected}
+    class:border-primary={connection.connected}
+    class:text-error={!connection.connected}
+    class:border-error={!connection.connected}>
+    {connection.connected ? 'Connected' : 'Disconnected'}</span>
   <form
     bind:this={form}
     action=""
     class="form-control gap-y-4"
-    on:submit|preventDefault={handleSubbmit}>
+    on:submit|preventDefault={handleSubmit}>
     <label for="ip" class="input-group">
       <span class="w-32 whitespace-nowrap">Endpoint label</span>
       <input
