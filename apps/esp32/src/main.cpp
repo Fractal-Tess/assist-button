@@ -72,5 +72,6 @@ void loop()
 
     delay(10000);
     requires_assistance = false;
+    digitalWrite(LED_PIN, LOW);
   }
 }
