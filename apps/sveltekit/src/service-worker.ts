@@ -122,6 +122,10 @@ sw.addEventListener('push', function (event) {
   }
 });
 
+sw.addEventListener('message', () => {
+  sw.registration.showNotification('Button Click ');
+});
+
 sw.addEventListener('notificationclick', (event: any) => {
   const clickedNotification = event?.notification;
 

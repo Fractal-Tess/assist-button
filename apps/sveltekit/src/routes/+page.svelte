@@ -24,6 +24,7 @@
   const sendNotification = (msg: string) => {
     if (Notification.permission !== 'granted')
       throw new Error('Notification permission not granted');
+    navigator.serviceWorker.controller?.postMessage('smth');
     new Notification(msg, { icon: 'logo.png', vibrate: [100, 50, 100] });
   };
 
